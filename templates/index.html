@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Analysis AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .panel {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 300px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-danger {
+            background-color: #f44336;
+        }
+        .btn-primary {
+            background-color: #2196F3;
+        }
+        input[type=file], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 150px;
+        }
+        .flash-message {
+            padding: 10px;
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>CV Analysis</h1>
+    
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    
+    <div class="container">
+        <div class="panel">
+            <h2>Upload CVs (PDF format)</h2>
+            <form method="POST" enctype="multipart/form-data">
+                <div>
+                    <input type="file" name="file" accept=".pdf" multiple>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button type="submit" class="btn">Upload PDFs</button>
+                </div>
+            </form>
+            
+            <div style="margin-top: 20px;">
+                <h3>Database Status</h3>
+                <p>CVs in database: <strong>{{ cv_count }}</strong></p>
+                
+                {% if uploaded_files %}
+                <h3>Files in upload folder:</h3>
+                <ul>
+                    {% for file in uploaded_files %}
+                    <li>{{ file }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('reset_database') }}">
+                    <button type="submit" class="btn btn-danger">Reset Database</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Run Analysis</h2>
+            <form method="POST" action="{{ url_for('analyze') }}">
+                <div>
+                    <label for="criteria">Evaluation Criteria (optional):</label>
+                    <textarea id="criteria" name="criteria" placeholder="Leave blank to use default criteria."></textarea>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button type="submit" class="btn btn-primary">Analyze CVs</button>
+                </div>
+            </form>
+            
+            {% if result %}
+            <div style="margin-top: 20px;">
+                <h3>Analysis Results:</h3>
+                <pre>{{ result }}</pre>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
